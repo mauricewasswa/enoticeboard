@@ -36,7 +36,7 @@ class Navbar extends StatelessWidget {
               ),
             ),
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Color(0xff76ca71),
               image: DecorationImage(
                 image: NetworkImage('https://media.istockphoto.com/id/1317007945/photo/exterior-view-of-a-typical-american-school-building.jpg?s=2048x2048&w=is&k=20&c=EtP-qsBPSSsWWMPfiewd9s5vGXk_ZGFbUvrV2fKPnVU='),
                   fit: BoxFit.fill,
@@ -61,7 +61,7 @@ class Navbar extends StatelessWidget {
         ),
         const Divider(
           height: 10,
-          color: Colors.blue,
+          color: Color(0xff76ca71),
           indent: 20,
           endIndent: 30,
           thickness: 2,
@@ -93,7 +93,7 @@ class Navbar extends StatelessWidget {
         ),
         const Divider(
           height: 10,
-          color: Colors.blue,
+          color: Color(0xff76ca71),
           indent: 20,
           endIndent: 30,
           thickness: 2,

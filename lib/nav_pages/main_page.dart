@@ -2,6 +2,7 @@ import 'package:enoticeboard/nav_pages/home_page.dart';
 import 'package:enoticeboard/nav_pages/notices_page.dart';
 import 'package:enoticeboard/nav_pages/profile_page.dart';
 import 'package:enoticeboard/nav_pages/settings_page.dart';
+import 'package:enoticeboard/nav_pages/test.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,7 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 List pages =[
-  MainPage(),
+  TestPage(),
   NoticesPage(),
   ProfilePage(),
   SettingsPage()
