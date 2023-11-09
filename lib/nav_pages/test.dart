@@ -89,17 +89,20 @@ class NewsFeedItem extends StatelessWidget {
             // Title, Name, and Level
             Row(
               children: [
-                Text('Title', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text('AR', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 Text(' • '),
-                Text('Name', style: TextStyle(fontSize: 16)),
+                Text('Wasswa Maurice', style: TextStyle(fontSize: 16)),
                 Text(' • '),
-                Text('Level', style: TextStyle(fontSize: 16)),
+                Text('ADMIN', style: TextStyle(fontSize: 16)),
               ],
             ),
             SizedBox(height: 8),
 
             // Date and Time
             Text('21-11-2023 • 09:23 AM', style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
+
+            SizedBox(height: 8),
+            Text('Change Of Programme update.', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(0, 0, 0, 1))),
 
             SizedBox(height: 16),
 
