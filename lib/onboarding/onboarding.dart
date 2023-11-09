@@ -1,4 +1,5 @@
 import 'package:enoticeboard/onboarding/onboarding_content.dart';
+import 'package:enoticeboard/onboarding/sign_in.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -86,7 +87,7 @@ class _OnboardingState extends State<Onboarding> {
             child: ElevatedButton(
               onPressed: () {
                 if(currentIndex == contents.length -1){
-                  Navigator.push(context, MaterialPageRoute(builder: (_)=>HomePage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (_)=>LoginPage()));
                 }
                 _controller.nextPage(duration: Duration(milliseconds: 100), curve: Curves.bounceIn);
               },

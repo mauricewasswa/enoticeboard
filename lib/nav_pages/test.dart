@@ -28,7 +28,39 @@ class TestPage extends StatelessWidget {
         children: [
           Container(
             padding: EdgeInsets.only(top: 30),
-              child: CustomAppBar()), // Use your custom app bar here
+              child: CustomAppBar()),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 5.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    height: 30,
+                    child: Image.asset('assets/search.png'),
+
+                  ),
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Search Notices...",
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 16.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),// Use your custom app bar here
           Expanded(
             child: ListView(
               children: [

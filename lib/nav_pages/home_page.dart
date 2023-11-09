@@ -78,6 +78,7 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           // Add a scrollable list of news feed items below the search
+          SizedBox(height: 100,),
           Expanded(
             child: ListView.builder(
               itemCount: 30, // Replace with the number of items you have

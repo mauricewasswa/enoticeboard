@@ -10,7 +10,7 @@ class NewsDetailPage extends StatelessWidget {
       ),
       body: Center(
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 25333),
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),

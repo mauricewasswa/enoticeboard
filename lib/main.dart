@@ -1,7 +1,7 @@
 import 'package:enoticeboard/nav_pages/main_page.dart';
 import 'package:flutter/material.dart';
 
-import 'customWidgets/testwid.dart';
+//import 'customWidgets/testwid.dart';
 import 'nav_pages/test.dart';
 import 'onboarding/onboarding.dart';
 
