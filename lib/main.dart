@@ -1,11 +1,17 @@
+import 'package:enoticeboard/firebase_options.dart';
 import 'package:enoticeboard/nav_pages/main_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 //import 'customWidgets/testwid.dart';
 import 'nav_pages/test.dart';
 import 'onboarding/onboarding.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 

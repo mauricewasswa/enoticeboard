@@ -75,7 +75,8 @@ class TestPage extends StatelessWidget {
           ),
         ],
       ),
-      drawer: CustomDrawer(), // Add your custom drawer widget if needed
+      drawer: CustomDrawer(context: context),
+      // Add your custom drawer widget if needed
     );
   }
 }

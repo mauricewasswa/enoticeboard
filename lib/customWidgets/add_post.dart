@@ -1,14 +1,22 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddNotice extends StatefulWidget {
   AddNotice({Key? key}) : super(key: key);
+
+
 
   @override
   _AddNoticeState createState() => _AddNoticeState();
 }
 
 class _AddNoticeState extends State<AddNotice> {
+  final _headerController = TextEditingController();
+  final _descController = TextEditingController();
+  final _contentController = TextEditingController();
+
   String? selectedFileName; // To store the selected file name
 
   @override
@@ -26,18 +34,21 @@ class _AddNoticeState extends State<AddNotice> {
           children: [
             // Title Field
             TextFormField(
+              controller: _headerController,
               decoration: InputDecoration(labelText: 'Title'),
             ),
             SizedBox(height: 16.0),
 
             // Description Field
             TextFormField(
+              controller: _descController,
               decoration: InputDecoration(labelText: 'Description'),
             ),
             SizedBox(height: 16.0),
 
             // Content Field
             TextFormField(
+              controller: _contentController,
               decoration: InputDecoration(labelText: 'Content'),
               maxLines: 4, // Allow multiple lines for content
             ),
@@ -88,6 +99,18 @@ class _AddNoticeState extends State<AddNotice> {
             // Submit Button
             ElevatedButton(
               onPressed: () {
+                CollectionReference collRef = FirebaseFirestore.instance.collection('posts');
+                collRef.add(
+                  {
+                    'Title' : _headerController.text,
+                    'Content' : _contentController.text,
+                    'Description' : _descController.text,
+                    'Doc' : null
+
+                  },
+                );
+
+                Navigator.pop(context);
                 // Implement form submission logic
               },
               style: ButtonStyle(
