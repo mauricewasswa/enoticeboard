@@ -15,7 +15,7 @@ class BtnWidget extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 25),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: Colors.black,
+          color: Color(0xff76ca71),
         ),
         child: Center(
           child: Text("Sign In",
