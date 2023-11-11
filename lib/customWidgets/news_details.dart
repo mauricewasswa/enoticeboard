@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import '../firebase/posts_model.dart';
 
 class NewsDetailPage extends StatelessWidget {
+  final Post post; // Declare a property to store the Post
+
+  // Constructor to receive the Post when creating NewsDetailPage
+  NewsDetailPage({required this.post});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +35,7 @@ class NewsDetailPage extends StatelessWidget {
               // Profile Picture
               CircleAvatar(
                 backgroundColor: Color(0xff76ca71),
-                backgroundImage: AssetImage('assets/get_photo.jpeg'),
+                backgroundImage: NetworkImage(post.profImgUrl),
                 radius: 24,
               ),
               SizedBox(height: 16),
@@ -37,11 +43,11 @@ class NewsDetailPage extends StatelessWidget {
               // Title, Name, and Level
               Row(
                 children: [
-                  Text('Title', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(post.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   Text(' • '),
-                  Text('Name', style: TextStyle(fontSize: 16)),
+                  Text('${post.fname} ${post.lname}', style: TextStyle(fontSize: 16)),
                   Text(' • '),
-                  Text('Level', style: TextStyle(fontSize: 16)),
+                  Text('${post.level}', style: TextStyle(fontSize: 16)),
                 ],
               ),
               SizedBox(height: 8),
@@ -49,45 +55,19 @@ class NewsDetailPage extends StatelessWidget {
               // Date and Time
               Text('21-11-2023 • 09:23 AM', style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
 
+              SizedBox(height: 8),
+              Text('${post.header}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(0, 0, 0, 1))),
+
+              SizedBox(height: 8),
+              Text('${post.desc}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Color.fromRGBO(0, 0, 0, 1))),
+
+
               SizedBox(height: 16),
 
-              // Body of the Notice (dummy text)
+              // Body of the Notice
               Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin congue neque aliquet hendrerit. Aliquam enim quam, sodales eget urna sed, bibendum rutrum risus. Mauris eu convallis tortor. Integer ut lacinia odio. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin congue neque aliquet hendrerit. Aliquam enim quam, sodales eget urna sed, bibendum rutrum risus. Mauris eu convallis tortor. Integer ut lacinia odio. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.',
+                post.content,
                 style: TextStyle(fontSize: 12, color: Color.fromRGBO(0, 0, 0, 1)),
-              ),
-
-              SizedBox(height: 16),
-
-              // Document Icon (PDF icon)
-              Row(
-                children: [
-                  Icon(
-                    Icons.picture_as_pdf, // PDF icon
-                    size: 24,
-                    color: Color(0xff222222),
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'Document.pdf', // Replace with the actual document name
-                    style: TextStyle(fontSize: 14, color: Color(0xff222222)),
-                  ),
-                ],
-              ),
-
-              Row(
-                children: [
-                  Icon(
-                    Icons.picture_as_pdf, // PDF icon
-                    size: 24,
-                    color: Color(0xff222222),
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'Document.pdf', // Replace with the actual document name
-                    style: TextStyle(fontSize: 14, color: Color(0xff222222)),
-                  ),
-                ],
               ),
             ],
           ),

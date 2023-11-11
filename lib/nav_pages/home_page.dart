@@ -1,20 +1,23 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../firebase/firebase_user_details.dart';
 import '../side_menu/Nav_bar.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+class MainPage extends StatelessWidget {
+   MainPage({Key? key}) : super(key: key);
 
 
-  @override
-  State<MainPage> createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Navbar(),
+      drawer: Navbar(context: context,
+        fName: '',
+        lName: '',
+        userEmail: '',
+        profImgUrl: '',
+
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){},
         backgroundColor: Color(0xff222222),

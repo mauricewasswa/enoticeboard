@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../firebase/firebase_user_details.dart';
+
 class AddNotice extends StatefulWidget {
   AddNotice({Key? key}) : super(key: key);
 
@@ -18,6 +20,30 @@ class _AddNoticeState extends State<AddNotice> {
   final _contentController = TextEditingController();
 
   String? selectedFileName; // To store the selected file name
+
+  Map<String, dynamic>? userDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    // Call getUserDetails when the widget is initialized
+    _getUserDetails();
+  }
+
+
+  // Function to get user details
+  void _getUserDetails() async {
+    userDetails = await getUserDetails();
+    if (userDetails != null) {
+      // Use the user details as needed
+      print('FName: ${userDetails!['fname']}');
+      print('LName: ${userDetails!['lname']}');
+      print('User Title: ${userDetails!['title']}');
+      print('User Level: ${userDetails!['level']}');
+    } else {
+      print('User details not available.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,15 +128,20 @@ class _AddNoticeState extends State<AddNotice> {
                 CollectionReference collRef = FirebaseFirestore.instance.collection('posts');
                 collRef.add(
                   {
-                    'Title' : _headerController.text,
+                    'Header' : _headerController.text,
                     'Content' : _contentController.text,
                     'Description' : _descController.text,
+                    'fname' : userDetails!['fname'],
+                    'lname' : userDetails!['lname'],
+                    'Title' : userDetails!['title'],
+                    'Level' : userDetails!['level'],
+                    'profImg' : userDetails!['profImg'],
                     'Doc' : null
 
                   },
                 );
 
-                Navigator.pop(context);
+                // Navigator.pop(context);
                 // Implement form submission logic
               },
               style: ButtonStyle(

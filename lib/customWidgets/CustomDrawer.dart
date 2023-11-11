@@ -5,9 +5,20 @@ import '../onboarding/sign_in.dart';
 
 class CustomDrawer extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final BuildContext context; // Add context as a parameter
+  final BuildContext context;
+  final String fName;
+  final String lName;
+  final String userEmail;
+  final String profImgurl;
 
-  CustomDrawer({Key? key, required this.context}) : super(key: key);
+  CustomDrawer({
+    Key? key,
+    required this.context,
+    required this.fName,
+    required this.lName,
+    required this.userEmail,
+    required this.profImgurl,
+  }) : super(key: key);
 
   Future<void> _signOut() async {
     try {
@@ -30,30 +41,38 @@ class CustomDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-
           UserAccountsDrawerHeader(
             accountName: Text(
-              "Wasswa Maurice",
+              fName+ " " +userEmail,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+
+              ),
             ),
             accountEmail: Text(
-              "mauricewassswa@gmail.com",
+              lName,
+              style: TextStyle(
+                fontSize: 15,
+
+              ),
             ),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                  child: Image.asset(
-                    'assets/get_photo.jpeg',
-                    fit: BoxFit.cover,
-                    width: 90,
-                    height: 90,
-                  )
+                child: Image.network(profImgurl,
+                  fit: BoxFit.cover,
+                  width: 90,
+                  height: 90,
+                ),
               ),
             ),
             decoration: BoxDecoration(
-                color: Color(0xff76ca71),
-                image: DecorationImage(
-                  image: NetworkImage('https://media.istockphoto.com/id/1317007945/photo/exterior-view-of-a-typical-american-school-building.jpg?s=2048x2048&w=is&k=20&c=EtP-qsBPSSsWWMPfiewd9s5vGXk_ZGFbUvrV2fKPnVU='),
-                  fit: BoxFit.fill,
-                )
+              color: Color(0xff76ca71),
+              image: DecorationImage(
+                image: NetworkImage(
+                    'https://media.istockphoto.com/id/1317007945/photo/exterior-view-of-a-typical-american-school-building.jpg?s=2048x2048&w=is&k=20&c=EtP-qsBPSSsWWMPfiewd9s5vGXk_ZGFbUvrV2fKPnVU='),
+                fit: BoxFit.fill,
+              ),
             ),
           ),
           ListTile(
@@ -66,7 +85,6 @@ class CustomDrawer extends StatelessWidget {
             title: Text("Faculty"),
             onTap: () => null,
           ),
-
           ListTile(
             leading: Icon(Icons.school),
             title: Text("MUST"),
@@ -104,7 +122,6 @@ class CustomDrawer extends StatelessWidget {
             title: Text("Help"),
             onTap: () => null,
           ),
-
           const Divider(
             height: 10,
             color: Color(0xff76ca71),
@@ -112,7 +129,6 @@ class CustomDrawer extends StatelessWidget {
             endIndent: 30,
             thickness: 2,
           ),
-
           ListTile(
             leading: Icon(Icons.logout),
             title: Text("Logout"),

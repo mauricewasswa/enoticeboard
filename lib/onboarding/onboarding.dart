@@ -89,7 +89,8 @@ class _OnboardingState extends State<Onboarding> {
                 if(currentIndex == contents.length -1){
                   Navigator.push(context, MaterialPageRoute(builder: (_)=>LoginPage()));
                 }
-                _controller.nextPage(duration: Duration(milliseconds: 100), curve: Curves.bounceIn);
+                _controller.nextPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+
               },
               child: Text(currentIndex == contents.length -1 ? "Continue":"Next",
               style: TextStyle(

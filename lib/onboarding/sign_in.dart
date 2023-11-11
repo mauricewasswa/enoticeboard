@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enoticeboard/customWidgets/btn_widget.dart';
 import 'package:enoticeboard/nav_pages/main_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,6 +26,11 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
+      //Getting users email
+      await getUserDetails(userCredential.user?.email);
+
+
       // User signed in successfully, you can navigate to the next screen.
       Navigator.push(
         context,
@@ -150,4 +156,40 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  Future<void> getUserDetails(String? userEmail) async {
+    if (userEmail != null) {
+      try {
+        // Access the "users" collection
+        CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
+
+        // Query the "users" collection using the user's email
+        QuerySnapshot querySnapshot = await usersCollection.where('email', isEqualTo: userEmail).get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          // Access the user's details from the first document (assuming unique emails)
+          DocumentSnapshot userSnapshot = querySnapshot.docs.first;
+
+          String fname = userSnapshot['fname'];
+          String lname = userSnapshot['lname'];
+          String userLevel = userSnapshot['level'];
+          String userTitle = userSnapshot['title'];
+
+          // Now you have access to the additional details about the user
+          print('User FName: $fname');
+          print('User LName: $lname');
+          print('User Level: $userLevel');
+          print('User Title: $userTitle');
+        } else {
+          print('User document does not exist in the "users" collection.');
+        }
+      } catch (e) {
+        print('Error getting user details: $e');
+        // Handle errors when retrieving user details
+      }
+    } else {
+      print('User email is null.');
+    }
+  }
+
 }
