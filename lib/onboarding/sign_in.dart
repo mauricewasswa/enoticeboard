@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -14,36 +13,43 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  bool _isLoading = false;
 
   Future<void> _signInWithEmailAndPassword() async {
     try {
+      setState(() {
+        _isLoading = true; // Show progress indicator
+      });
+
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      //Getting users email
+      // Getting user's email
       await getUserDetails(userCredential.user?.email);
 
-
-      // User signed in successfully, you can navigate to the next screen.
+      // User signed in successfully, navigate to the next screen
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Invalid credentials. Please try again.'),
-            backgroundColor: Colors.red,
-          ),
+        SnackBar(
+          content: Text('Invalid credentials. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
       );
       print('Error signing in: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Hide progress indicator
+      });
     }
   }
 
@@ -55,23 +61,26 @@ class _LoginPageState extends State<LoginPage> {
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: 30,),
+              SizedBox(height: 30),
               Container(
-                  margin: EdgeInsets.only(top: 30,left: 50,right: 50,bottom: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-
-                  ),
-                  child: Image.asset('assets/logo.png',
-                    height: 200,
-                    width: 200,)
+                margin: EdgeInsets.only(top: 30, left: 50, right: 50, bottom: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Image.asset(
+                  'assets/logo.png',
+                  height: 200,
+                  width: 200,
+                ),
               ),
-              Text("Welcome!",
+              Text(
+                "Welcome!",
                 style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold
-                ),),
+                  color: Colors.grey[700],
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               SizedBox(
                 height: 20,
               ),
@@ -95,9 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
-              SizedBox(height: 20,),
-
+              SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: TextField(
@@ -119,37 +126,28 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
-              SizedBox(height: 10,),
-
+              SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                        'Forgot Password?',
-                        style : TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[600],
-                        )
+                      'Forgot Password?',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600],
+                      ),
                     ),
                   ],
                 ),
               ),
-
-              SizedBox(height: 25,),
-
-              BtnWidget(
+              SizedBox(height: 25),
+              _isLoading
+                  ? CircularProgressIndicator() // Show progress indicator if loading
+                  : BtnWidget(
                 onTap: _signInWithEmailAndPassword,
-                  // String enteredUsername = _emailController.text.trim();
-                  // String enteredPassword = _passwordController.text.trim();
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => HomePage()),
-                  // );
               ),
-
             ],
           ),
         ),
@@ -191,5 +189,4 @@ class _LoginPageState extends State<LoginPage> {
       print('User email is null.');
     }
   }
-
 }

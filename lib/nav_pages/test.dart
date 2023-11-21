@@ -114,18 +114,27 @@ class _TestPageState extends State<TestPage> {
 
                 List<Post> posts = snapshot.data!.docs.map((doc) {
                   Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+                  String formattedTime = data['time'] != null
+                      ? (data['time'] as Timestamp).toDate().toString()
+                      : '';
+
                   return Post(
                     title: data['Title'] ?? '',
                     content: data['Content'] ?? '',
                     fname: data['fname'] ?? '',
-                    lname: data['lname']?? '',
-                    level: data['Level']?? '',
-                    header: data ['Header']?? '',
+                    lname: data['lname'] ?? '',
+                    level: data['Level'] ?? '',
+                    header: data['Header'] ?? '',
                     desc: data['Description'] ?? '',
                     profImgUrl: data['profImg'] ?? '',
-                    // date: data['Date'] ?? '',
+                    time: formattedTime.isNotEmpty
+                        ? Timestamp.fromDate(DateTime.parse(formattedTime))
+                        : Timestamp.now(),
+                    postdoc: data['Doc']??'',
                   );
                 }).toList();
+                posts.sort((a, b) => b.time.compareTo(a.time));
 
                 return ListView.builder(
                   itemCount: posts.length,

@@ -1,6 +1,8 @@
 // news_feed.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../firebase/posts_model.dart';
 import 'news_details.dart';
 
@@ -59,7 +61,7 @@ class NewsFeedItem extends StatelessWidget {
             SizedBox(height: 8),
 
             // Date and Time
-            Text("21-11-2023", style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
+            Text(_formatTimestamp(post.time),style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
 
             SizedBox(height: 8),
             Text('${post.header}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(0, 0, 0, 1))),
@@ -78,5 +80,12 @@ class NewsFeedItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatTimestamp(Timestamp timestamp) {
+    // Customize the formatting based on your needs
+    DateTime dateTime = timestamp.toDate();
+    String formattedDate = DateFormat('dd-MM-yyyy • hh:mm a').format(dateTime);
+    return formattedDate;
   }
 }

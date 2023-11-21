@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../firebase/firebase_user_details.dart';
+// import 'package:google_fonts/google_fonts.dart';
 import '../side_menu/Nav_bar.dart';
 
 class MainPage extends StatelessWidget {

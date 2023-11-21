@@ -1,14 +1,14 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 
 import '../firebase/firebase_user_details.dart';
 
 class AddNotice extends StatefulWidget {
   AddNotice({Key? key}) : super(key: key);
-
-
 
   @override
   _AddNoticeState createState() => _AddNoticeState();
@@ -20,6 +20,8 @@ class _AddNoticeState extends State<AddNotice> {
   final _contentController = TextEditingController();
 
   String? selectedFileName; // To store the selected file name
+  File? selectedFilePath;
+  String? fileDownloadUrl; // To store the download URL of the uploaded file
 
   Map<String, dynamic>? userDetails;
 
@@ -29,7 +31,6 @@ class _AddNoticeState extends State<AddNotice> {
     // Call getUserDetails when the widget is initialized
     _getUserDetails();
   }
-
 
   // Function to get user details
   void _getUserDetails() async {
@@ -83,15 +84,17 @@ class _AddNoticeState extends State<AddNotice> {
             // File Upload
             ElevatedButton(
               onPressed: () async {
-                // Implement file upload logic
                 FilePickerResult? result = await FilePicker.platform.pickFiles();
-                if (result == null) {
-                  print("No file selected");
-                } else {
+                if (result != null && result.files.isNotEmpty) {
+                  String fileName = result.files.single.name;
+                  String filePath = result.files.single.path!;
+
                   setState(() {
-                    selectedFileName = result.files.single.name; // Store the selected file name
-                    print(selectedFileName);
+                    selectedFileName = fileName;
+                    selectedFilePath = File(filePath);
                   });
+                } else {
+                  print("No file selected");
                 }
               },
               style: ButtonStyle(
@@ -99,12 +102,13 @@ class _AddNoticeState extends State<AddNotice> {
               ),
               child: Text('Attach File'),
             ),
+
             SizedBox(height: 8.0),
 
             // Display the selected file name
             if (selectedFileName != null)
               Text(
-                'Selected File: $selectedFileName',
+                'Selected File: ${selectedFileName?.split('/').last}',  // Extracting the file name from the path
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
 
@@ -124,25 +128,56 @@ class _AddNoticeState extends State<AddNotice> {
 
             // Submit Button
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
+                if (selectedFileName != null) {
+                  File file = selectedFilePath!;
+
+                  // Ensure that the file exists before attempting to upload
+                  if (file.existsSync()) {
+                    // Create a reference to the Firebase Storage location
+                    String uniqueFileName = "${DateTime.now().millisecondsSinceEpoch}_$selectedFileName";
+                    firebase_storage.Reference storageReference =
+                    firebase_storage.FirebaseStorage.instance.ref().child(uniqueFileName);
+
+                    try {
+                      // Upload the file to Firebase Storage
+                      await storageReference.putFile(file);
+
+                      // Get the download URL of the uploaded file
+                      String downloadURL = await storageReference.getDownloadURL();
+
+                      // Update the UI with the download URL
+                      setState(() {
+                        fileDownloadUrl = downloadURL;
+                      });
+
+                      print('File uploaded. Download URL: $downloadURL');
+                    } catch (e) {
+                      print('Error uploading file: $e');
+                    }
+                  } else {
+                    print('File does not exist: $selectedFileName');
+                  }
+                }
+
+                // Add your form submission logic here
                 CollectionReference collRef = FirebaseFirestore.instance.collection('posts');
                 collRef.add(
                   {
-                    'Header' : _headerController.text,
-                    'Content' : _contentController.text,
-                    'Description' : _descController.text,
-                    'fname' : userDetails!['fname'],
-                    'lname' : userDetails!['lname'],
-                    'Title' : userDetails!['title'],
-                    'Level' : userDetails!['level'],
-                    'profImg' : userDetails!['profImg'],
-                    'Doc' : null
-
+                    'Header': _headerController.text,
+                    'Content': _contentController.text,
+                    'Description': _descController.text,
+                    'fname': userDetails!['fname'],
+                    'lname': userDetails!['lname'],
+                    'Title': userDetails!['title'],
+                    'Level': userDetails!['level'],
+                    'profImg': userDetails!['profImg'],
+                    'time': FieldValue.serverTimestamp(),
+                    'Doc': fileDownloadUrl,
                   },
                 );
 
-                // Navigator.pop(context);
-                // Implement form submission logic
+                Navigator.pop(context); // Implement form submission logic
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Color(0xff222222)),

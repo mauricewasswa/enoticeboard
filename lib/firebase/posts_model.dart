@@ -1,5 +1,7 @@
 // post_model.dart
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Post {
   final String title;
   final String content;
@@ -9,6 +11,8 @@ class Post {
   final String header;
   final String desc;
   final String profImgUrl;
+  final Timestamp time;
+  final postdoc;
 
   Post({
     required this.title,
@@ -19,5 +23,7 @@ class Post {
     required this.header,
     required this.desc,
     required this.profImgUrl,
+    required this.time,
+    this.postdoc,
   });
 }
