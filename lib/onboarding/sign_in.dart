@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    hintText: 'Username',
+                    hintText: 'Email',
                     hintStyle: TextStyle(
                       color: Colors.grey[400],
                     ),

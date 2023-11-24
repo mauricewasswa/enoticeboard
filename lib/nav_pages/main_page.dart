@@ -43,7 +43,7 @@ void onTap(int index) {
         elevation: 0,
         items: [
           BottomNavigationBarItem(label:( "Home"),icon: Icon(Icons.apps)),
-          BottomNavigationBarItem(label:( "Notices"),icon: Icon(Icons.list)),
+          BottomNavigationBarItem(label:( "Forums"),icon: Icon(Icons.list)),
           BottomNavigationBarItem(label:( "Profile"),icon: Icon(Icons.person)),
           BottomNavigationBarItem(label:( "Settings"),icon: Icon(Icons.settings)),
         ],
