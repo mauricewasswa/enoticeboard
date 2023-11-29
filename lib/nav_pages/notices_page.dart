@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -7,19 +8,25 @@ import '../firebase/firebase_user_details.dart';
 import '../side_menu/Nav_bar.dart';
 
 class Forum {
+  final String id;
   final String title;
   final String description;
   final int notificationCount;
 
   Forum({
+    required this.id,
     required this.title,
     required this.description,
     required this.notificationCount,
   });
 }
 
+String forum_id = '';
+
 class NoticesPage extends StatefulWidget {
-  const NoticesPage({Key? key}) : super(key: key);
+   NoticesPage({Key? key}) : super(key: key);
+
+
 
   @override
   _NoticesPageState createState() => _NoticesPageState();
@@ -27,39 +34,83 @@ class NoticesPage extends StatefulWidget {
 
 class _NoticesPageState extends State<NoticesPage> {
   Map<String, dynamic>? userDetails;
-
-  // Sample list of enrolled forums (replace it with your data)
-  List<Forum> enrolledForums = [
-    Forum(title: 'Forum 1', description: 'Description of Forum 1', notificationCount: 3),
-    Forum(title: 'Forum 2', description: 'Description of Forum 2', notificationCount: 0),
-    // Add more forums as needed
-  ];
+  List<Forum> enrolledForums = [];
 
   @override
   void initState() {
     super.initState();
-    // Call getUserDetails when the widget is initialized
     _getUserDetails();
-
-    // Listen for changes in authentication state
     FirebaseAuth.instance.authStateChanges().listen((user) {
-      // When the authentication state changes, update user details
+      print('Auth State Change: $user');
       _getUserDetails();
+      if (user != null) {
+        _fetchEnrolledForums(user.uid);
+      } else {
+        setState(() {
+          enrolledForums = [];
+        });
+      }
     });
   }
 
   void _getUserDetails() async {
     userDetails = await getUserDetails();
+    print('User Details: $userDetails');
     if (userDetails != null) {
-      // Use the user details as needed
-      print('FName: ${userDetails!['fname']}');
-      print('LName: ${userDetails!['lname']}');
-      print('User Title: ${userDetails!['title']}');
-      print('User Level: ${userDetails!['level']}');
+      setState(() {});
+    }
+  }
 
-      setState(() {}); // Trigger a rebuild when userDetails is updated
-    } else {
-      print('User details not available.');
+  void _fetchEnrolledForums(String userId) async {
+    try {
+      QuerySnapshot membershipSnapshot = await FirebaseFirestore.instance
+          .collection('forums')
+          .where('members', arrayContains: userId)
+          .get();
+
+      print('Membership Snapshot: $membershipSnapshot');
+
+      List<Forum> forums = [];
+
+      for (QueryDocumentSnapshot doc in membershipSnapshot.docs) {
+        print('Forum Member Document ID: ${doc.id}');
+        DocumentSnapshot forumSnapshot = await FirebaseFirestore.instance
+            .collection('forums')
+            .doc(doc.id)
+            .get();
+
+        forum_id = doc.id;
+
+
+        if (forumSnapshot.exists) {
+          print('Forum Data: ${forumSnapshot.data()}');
+
+          try {
+            Forum forum = Forum(
+              id: forumSnapshot.id,
+              title: forumSnapshot['title'] ?? 'Default Title',
+              description: forumSnapshot['description'] ?? 'Default Description', notificationCount: 0,
+              // Add other fields as needed
+            );
+
+            forums.add(forum);
+          } catch (e) {
+            print('Error creating Forum object: $e');
+          }
+        }
+      }
+
+
+      print('Enrolled Forums: $forums');
+
+      setState(() {
+        enrolledForums = forums;
+      });
+    } catch (e) {
+      print('Error fetching enrolled forums: $e');
+      setState(() {
+        enrolledForums = [];
+      });
     }
   }
 
@@ -105,12 +156,14 @@ class _NoticesPageState extends State<NoticesPage> {
         itemBuilder: (context, index) {
           final forum = enrolledForums[index];
           return ForumWidget(
+
             title: forum.title,
             description: forum.description,
             notificationCount: forum.notificationCount,
           );
         },
       ),
+
     );
   }
 }

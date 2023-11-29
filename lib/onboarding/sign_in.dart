@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:enoticeboard/customWidgets/btn_widget.dart';
 import 'package:enoticeboard/nav_pages/main_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -20,14 +21,30 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
 
   Future<void> _signInWithEmailAndPassword() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showErrorDialog('Please fill in all fields.');
+      return;
+    }
+
     try {
       setState(() {
         _isLoading = true; // Show progress indicator
       });
 
+      // Check for internet connectivity
+      var connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        // No internet connection, show alert
+        _showNoConnectionDialog();
+        return;
+      }
+
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+        email: email,
+        password: password,
       );
 
       // Getting user's email
@@ -46,6 +63,13 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
       print('Error signing in: $e');
+
+      // Check for internet connectivity after catching the error
+      var connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        // No internet connection, show alert
+        _showNoConnectionDialog();
+      }
     } finally {
       setState(() {
         _isLoading = false; // Hide progress indicator
@@ -69,8 +93,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: Image.asset(
                   'assets/logo.png',
-                  height: 200,
-                  width: 200,
+                  height: 100,
+                  width: 100,
                 ),
               ),
               Text(
@@ -132,11 +156,16 @@ class _LoginPageState extends State<LoginPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[600],
+                    TextButton(
+                      onPressed: () {
+                        _resetPassword();
+                      },
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[600],
+                        ),
                       ),
                     ),
                   ],
@@ -162,7 +191,8 @@ class _LoginPageState extends State<LoginPage> {
         CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
 
         // Query the "users" collection using the user's email
-        QuerySnapshot querySnapshot = await usersCollection.where('email', isEqualTo: userEmail).get();
+        QuerySnapshot querySnapshot =
+        await usersCollection.where('email', isEqualTo: userEmail).get();
 
         if (querySnapshot.docs.isNotEmpty) {
           // Access the user's details from the first document (assuming unique emails)
@@ -188,5 +218,65 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       print('User email is null.');
     }
+  }
+
+  void _showNoConnectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('No Internet Connection'),
+          content: Text('Please check your internet connection and try again.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _resetPassword() async {
+    try {
+      await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Password reset email sent. Check your email inbox.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error sending password reset email. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      print('Error sending password reset email: $e');
+    }
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(errorMessage),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

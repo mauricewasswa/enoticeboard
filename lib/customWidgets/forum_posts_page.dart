@@ -1,6 +1,9 @@
 import 'package:enoticeboard/customWidgets/forum_post_detail.dart';
 import 'package:flutter/material.dart';
 
+import '../popmenu/add_members.dart';
+import '../popmenu/forum_settings.dart';
+
 class PostsPage extends StatelessWidget {
   final String forumTitle;
 
@@ -11,7 +14,41 @@ class PostsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xff76ca71),
-        title: Text('$forumTitle Posts'),
+        title: Text('$forumTitle'),
+        centerTitle: true,
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              // Handle menu item selection
+              if (value == 'addMembers') {
+                // Navigate to Add Members screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddMembersPage(forumTitle : forumTitle,)),
+                );
+              } else if (value == 'settings') {
+                // Navigate to Settings screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ForumSettingsPage()),
+                );
+              }
+              // Add more conditions for other menu items
+            },
+
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem<String>(
+                value: 'addMembers',
+                child: Text('Add Members'),
+              ),
+              PopupMenuItem<String>(
+                value: 'settings',
+                child: Text('Settings'),
+              ),
+              // Add more menu items as needed
+            ],
+          ),
+        ],
       ),
       body: ListView(
         children: [
@@ -38,7 +75,7 @@ class PostWidget extends StatelessWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) {
-              return ForumPostDetail(); // Pass the post to NewsDetailPage
+              return ForumPostDetail(); // Pass the post to ForumPostDetail
             },
           ),
         );
@@ -80,7 +117,7 @@ class PostWidget extends StatelessWidget {
             SizedBox(height: 8),
 
             // Date and Time
-            Text("22-22-2222",style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
+            Text("22-22-2222", style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
 
             SizedBox(height: 8),
             Text('${"This Is Our Forum"}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(0, 0, 0, 1))),
@@ -98,6 +135,6 @@ class PostWidget extends StatelessWidget {
           ],
         ),
       ),
-    );;
+    );
   }
 }

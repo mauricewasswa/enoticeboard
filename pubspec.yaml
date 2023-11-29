@@ -47,6 +47,8 @@ dependencies:
   intl: ^0.18.1
   shared_preferences: ^2.2.2
   url_launcher: ^6.2.1
+  loading_animation_widget: ^1.2.0+4
+  connectivity: ^3.0.6
 
 dev_dependencies:
   flutter_test:
@@ -56,7 +58,7 @@ dev_dependencies:
 flutter_launcher_icons:
     android: "launcher_icon"
     ios: true
-    image_path: "assets/eNoticeboard-logos.jpeg"
+    image_path: "assets/logo.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
