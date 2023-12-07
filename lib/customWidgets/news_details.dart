@@ -56,7 +56,7 @@ class NewsDetailPage extends StatelessWidget {
                 SizedBox(height: 8),
 
                 // Date and Time
-                Text('${_formatTimestamp(post.time as Timestamp)}', style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
+                Text('${_formatTimestamp(post.time)}', style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
 
                 SizedBox(height: 8),
 

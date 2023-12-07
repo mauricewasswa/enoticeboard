@@ -159,7 +159,7 @@ class _NoticesPageState extends State<NoticesPage> {
 
             title: forum.title,
             description: forum.description,
-            notificationCount: forum.notificationCount,
+            notificationCount: forum.notificationCount, forumId: forum.id,
           );
         },
       ),

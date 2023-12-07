@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'forum_posts_page.dart';
@@ -7,11 +6,13 @@ class ForumWidget extends StatelessWidget {
   final String title;
   final String description;
   final int notificationCount;
+  final String forumId;
 
   ForumWidget({
     required this.title,
     required this.description,
     required this.notificationCount,
+    required this.forumId
   });
 
   @override
@@ -23,7 +24,7 @@ class ForumWidget extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) {
               // Replace 'PostsPage' with the actual page where you display posts
-              return PostsPage(forumTitle: title);
+              return ForumPostsPage(forumTitle: title, forumId: forumId,);
             },
           ),
         );

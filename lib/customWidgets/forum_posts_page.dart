@@ -1,17 +1,35 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enoticeboard/customWidgets/forum_post_detail.dart';
 import 'package:flutter/material.dart';
 
 import '../popmenu/add_members.dart';
 import '../popmenu/forum_settings.dart';
+import 'forum_add_notice.dart';
 
-class PostsPage extends StatelessWidget {
+class ForumPostsPage extends StatelessWidget {
   final String forumTitle;
+  final String forumId;
 
-  PostsPage({required this.forumTitle});
+  ForumPostsPage({required this.forumTitle, required this.forumId});
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference postsCollection = FirebaseFirestore.instance.collection('forumposts');
+
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return ForumAddNotice();
+              },
+            ),
+          );
+        },
+        backgroundColor: Color(0xff222222),
+        child: Icon(Icons.add, color: Colors.white),
+      ),
       appBar: AppBar(
         backgroundColor: Color(0xff76ca71),
         title: Text('$forumTitle'),
@@ -24,18 +42,17 @@ class PostsPage extends StatelessWidget {
                 // Navigate to Add Members screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddMembersPage(forumTitle : forumTitle,)),
+                  MaterialPageRoute(builder: (context) => AddMembersPage(forumTitle: forumTitle)),
                 );
               } else if (value == 'settings') {
                 // Navigate to Settings screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ForumSettingsPage()),
+                  MaterialPageRoute(builder: (context) => ForumSettingsPage(forumId: forumId, forumTitle: forumTitle, forumDesc: '')),
                 );
               }
               // Add more conditions for other menu items
             },
-
             itemBuilder: (BuildContext context) => [
               PopupMenuItem<String>(
                 value: 'addMembers',
@@ -50,23 +67,72 @@ class PostsPage extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          // Example post widgets, you can replace this with your actual post data
-          PostWidget(author: 'User1', content: 'This is the first post in $forumTitle.'),
-          PostWidget(author: 'User2', content: 'Another post in $forumTitle.'),
-          // Add more post widgets as needed
-        ],
+      body: StreamBuilder<QuerySnapshot>(
+        stream: postsCollection.where('forumId', isEqualTo: forumId).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.data?.docs.isEmpty ?? true) {
+            return Center(child: Text('No posts available.'));
+          }
+          return ListView.builder(
+            itemCount: snapshot.data?.docs.length,
+            itemBuilder: (context, index) {
+              var post = snapshot.data!.docs[index].data()! as Map<String, dynamic>;
+
+              return PostWidget(
+                forumId: post['forumId'],
+                postId: snapshot.data!.docs[index].id ?? 'defaultId',
+                title: post['Title'],
+                content: post['Content'],
+                fname: post['fname'],
+                lname: post['lname'],
+                level: post['Level'],
+                header: post['Header'],
+                desc: post['Description'],
+                profImgUrl: post['profImg'],
+                time: post['time'],
+              );
+            },
+          );
+        },
       ),
     );
   }
 }
 
 class PostWidget extends StatelessWidget {
-  final String author;
+  final String forumId;
+  final String postId;
+  final String title;
   final String content;
+  final String fname;
+  final String lname;
+  final String level;
+  final String header;
+  final String desc;
+  final String profImgUrl;
+  final Timestamp time;
+  final postdoc;
 
-  PostWidget({required this.author, required this.content});
+  PostWidget({
+    required this.forumId,
+    required this.postId,
+    required this.title,
+    required this.content,
+    required this.fname,
+    required this.lname,
+    required this.level,
+    required this.header,
+    required this.desc,
+    required this.profImgUrl,
+    required this.time,
+    this.postdoc,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -97,41 +163,34 @@ class PostWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile Picture
             CircleAvatar(
-              backgroundImage: NetworkImage('https://www.istockphoto.com/photo/close-up-profile-of-handsome-young-man-gm1377471505-442577091?utm_campaign=srp_photos_top&utm_content=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fprofile&utm_medium=affiliate&utm_source=unsplash&utm_term=profile%3A%3A%3A'),
+              backgroundImage: NetworkImage(profImgUrl ?? ''),
               radius: 24,
             ),
             SizedBox(height: 16),
 
-            // Title, Name, and Level
             Row(
               children: [
-                Text("Mr.", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(title ?? 'No Title', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 Text(' • '),
-                Text("Myname" + " " + "Lastname", style: TextStyle(fontSize: 16)),
+                Text(fname + " " + lname ?? 'No Name', style: TextStyle(fontSize: 16)),
                 Text(' • '),
-                Text('${"Level"}', style: TextStyle(fontSize: 16)),
+                Text('${level ?? 'No Level'}', style: TextStyle(fontSize: 16)),
               ],
             ),
             SizedBox(height: 8),
 
-            // Date and Time
-            Text("22-22-2222", style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
+            Text(time?.toDate().toString() ?? 'No Date', style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
+
+            // Add this line to identify the property causing the issue
+            Text('DEBUG: ${header ?? 'No Header'}'),
 
             SizedBox(height: 8),
-            Text('${"This Is Our Forum"}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(0, 0, 0, 1))),
-
+            Text('${header ?? 'No Header'}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(0, 0, 0, 1))),
             SizedBox(height: 8),
-            Text('${"Lorem Ipsum Dolor"}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Color.fromRGBO(0, 0, 0, 1))),
+            Text('${desc ?? 'No Description'}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Color.fromRGBO(0, 0, 0, 1))),
 
             SizedBox(height: 16),
-
-            // Body of the Notice
-            // Text(
-            //   post.content,
-            //   style: TextStyle(fontSize: 12, color: Color.fromRGBO(0, 0, 0, 1)),
-            // ),
           ],
         ),
       ),

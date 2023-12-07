@@ -1,4 +1,3 @@
-import 'package:enoticeboard/nav_pages/home_page.dart';
 import 'package:enoticeboard/nav_pages/notices_page.dart';
 import 'package:enoticeboard/nav_pages/profile_page.dart';
 import 'package:enoticeboard/nav_pages/settings_page.dart';

@@ -109,7 +109,10 @@ class _TestPageState extends State<TestPage> {
               stream: FirebaseService.getPostsStream(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xff76ca71)), // Set color
+                      strokeWidth: 3.0, // Set stroke width
+                  ));
                 }
 
                 List<Post> posts = snapshot.data!.docs.map((doc) {

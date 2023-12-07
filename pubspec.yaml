@@ -49,6 +49,7 @@ dependencies:
   url_launcher: ^6.2.1
   loading_animation_widget: ^1.2.0+4
   connectivity: ^3.0.6
+  simple_progress_indicators: ^0.2.0
 
 dev_dependencies:
   flutter_test:

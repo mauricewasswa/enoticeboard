@@ -1,3 +1,4 @@
+import 'package:enoticeboard/nav_pages/notices_page.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
@@ -6,14 +7,14 @@ import 'dart:io';
 
 import '../firebase/firebase_user_details.dart';
 
-class AddNotice extends StatefulWidget {
-  AddNotice({Key? key}) : super(key: key);
+class ForumAddNotice extends StatefulWidget {
+  ForumAddNotice({Key? key}) : super(key: key);
 
   @override
   _AddNoticeState createState() => _AddNoticeState();
 }
 
-class _AddNoticeState extends State<AddNotice> {
+class _AddNoticeState extends State<ForumAddNotice> {
   final _headerController = TextEditingController();
   final _descController = TextEditingController();
   final _contentController = TextEditingController();
@@ -160,7 +161,7 @@ class _AddNoticeState extends State<AddNotice> {
                 }
 
                 // Add your form submission logic here
-                CollectionReference collRef = FirebaseFirestore.instance.collection('posts');
+                CollectionReference collRef = FirebaseFirestore.instance.collection('forumposts');
                 collRef.add(
                   {
                     'Header': _headerController.text,
@@ -173,6 +174,7 @@ class _AddNoticeState extends State<AddNotice> {
                     'profImg': userDetails!['profImg'],
                     'time': FieldValue.serverTimestamp(),
                     'Doc': fileDownloadUrl,
+                    'forumId': forum_id
                   },
                 );
 
