@@ -141,7 +141,12 @@ class PostWidget extends StatelessWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) {
-              return ForumPostDetail(); // Pass the post to ForumPostDetail
+              return ForumPostDetail(title:title,
+                content: content,
+                fname: fname, lname: lname, level: level, header:
+                header, desc: desc, profImgUrl:profImgUrl, time: time, forumId: forumId, forumTitle: title,
+
+              ); // Pass the post to ForumPostDetail
             },
           ),
         );

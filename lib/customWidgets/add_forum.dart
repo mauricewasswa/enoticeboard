@@ -115,20 +115,13 @@ class _AddForumState extends State<AddForum> {
                   DocumentReference forumRef = await FirebaseFirestore.instance.collection('forums').add({
                     'title': forumName,
                     'description': description,
+                    'admins': [currentUser.uid], // Start with the current user as the first admin
+                    'members': [currentUser.uid], // The first user is also a member
                     // Add other fields as needed
                   });
 
                   // Get the forum ID
                   String forumId = forumRef.id;
-
-                  // Enroll the first user as the admin and member
-                  await FirebaseFirestore.instance.collection('forums').doc(forumId).set({
-                    'title': forumName,
-                    'description': description,
-                    'admin': currentUser.uid,
-                    'members': [currentUser.uid], // The first user is also a member
-                  });
-                  print(currentUser.uid);
 
                   // Optionally, you can navigate to a different screen or perform other actions after submitting
                   Navigator.pop(context);
@@ -139,6 +132,7 @@ class _AddForumState extends State<AddForum> {
               },
               child: Text('Submit'),
             ),
+
           ],
         ),
       ),

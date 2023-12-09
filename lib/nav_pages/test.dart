@@ -20,6 +20,7 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage> {
   Map<String, dynamic>? userDetails;
+  bool? isAdmin;
 
   @override
   void initState() {
@@ -43,9 +44,10 @@ class _TestPageState extends State<TestPage> {
       print('User Title: ${userDetails!['title']}');
       print('User Level: ${userDetails!['level']}');
       print('img url : ${userDetails!['profImg']}');
+//admins glory Level
+      isAdmin = userDetails!['level'] == 'ADMIN';
 
       setState(() {}); // Trigger a rebuild when userDetails is updated
-
     } else {
       print('User details not available.');
     }
@@ -54,7 +56,8 @@ class _TestPageState extends State<TestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: isAdmin ?? false
+          ? FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -66,7 +69,8 @@ class _TestPageState extends State<TestPage> {
         },
         backgroundColor: Color(0xff222222),
         child: Icon(Icons.add, color: Colors.white),
-      ),
+      )
+          : null,
       body: Column(
         children: [
           Container(
@@ -110,8 +114,8 @@ class _TestPageState extends State<TestPage> {
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xff76ca71)), // Set color
-                      strokeWidth: 3.0, // Set stroke width
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xff76ca71)), // Set color
+                    strokeWidth: 3.0, // Set stroke width
                   ));
                 }
 
@@ -134,7 +138,7 @@ class _TestPageState extends State<TestPage> {
                     time: formattedTime.isNotEmpty
                         ? Timestamp.fromDate(DateTime.parse(formattedTime))
                         : Timestamp.now(),
-                    postdoc: data['Doc']??'',
+                    postdoc: data['Doc'] ?? '',
                   );
                 }).toList();
                 posts.sort((a, b) => b.time.compareTo(a.time));
@@ -158,7 +162,7 @@ class _TestPageState extends State<TestPage> {
         lName: userDetails!['email'],
         profImgurl: userDetails!['profImg'],
       )
-          : CircularProgressIndicator(), // Loading indicator while fetching userDetails
+          : CircularProgressIndicator(),
     );
   }
 }

@@ -84,7 +84,7 @@ class NewsDetailPage extends StatelessWidget {
                     child: Image.network(
                       post.postdoc, // Assuming post.postdoc contains the URL of the attached image
                       width: 350, // Set the width of the image as per your requirement
-                      height: 500, // Set the height of the image as per your requirement
+                      height: 400, // Set the height of the image as per your requirement
                       fit: BoxFit.cover, // You can customize the BoxFit property based on your needs
                     ),
                   ),

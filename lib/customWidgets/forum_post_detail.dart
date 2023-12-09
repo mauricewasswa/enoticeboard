@@ -1,14 +1,42 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ForumPostDetail extends StatelessWidget {
-  const ForumPostDetail({super.key});
+  final String title;
+  final String content;
+  final String fname;
+  final String lname;
+  final String level;
+  final String header;
+  final String desc;
+  final String profImgUrl;
+  final Timestamp time;
+  final postdoc;
+  final String forumId;
+  final String forumTitle;
+
+  const ForumPostDetail({
+    required this.title,
+    required this.content,
+    required this.fname,
+    required this.lname,
+    required this.level,
+    required this.header,
+    required this.desc,
+    required this.profImgUrl,
+    required this.time,
+    this.postdoc,
+    required this.forumId,
+    required this.forumTitle,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xff76ca71),
-        title: Text('Notice Detail'),
+        title: Text(header),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -32,7 +60,7 @@ class ForumPostDetail extends StatelessWidget {
                 // Profile Picture
                 CircleAvatar(
                   backgroundColor: Color(0xff76ca71),
-                  backgroundImage: NetworkImage("https://www.istockphoto.com/photo/close-up-profile-of-handsome-young-man-gm1377471505-442577091?utm_campaign=srp_photos_top&utm_content=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fprofile&utm_medium=affiliate&utm_source=unsplash&utm_term=profile%3A%3A%3A"),
+                  backgroundImage: NetworkImage(profImgUrl),
                   radius: 24,
                 ),
                 SizedBox(height: 16),
@@ -40,49 +68,56 @@ class ForumPostDetail extends StatelessWidget {
                 // Title, Name, and Level
                 Row(
                   children: [
-                    Text("post.title", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     Text(' • '),
-                    Text('${"Fname"} ${"Lname"}', style: TextStyle(fontSize: 16)),
+                    Text('$fname $lname', style: TextStyle(fontSize: 16)),
                     Text(' • '),
-                    Text('${"Level"}', style: TextStyle(fontSize: 16)),
+                    Text('$level', style: TextStyle(fontSize: 16)),
                   ],
                 ),
                 SizedBox(height: 8),
 
                 // Date and Time
-                Text('22-22-2222', style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
+                Text('${_formatTimestamp(time)}', style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
 
                 SizedBox(height: 8),
 
-
-
-                SizedBox(height: 8),
-
-                Text('${"post.header"}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(0, 0, 0, 1))),
+                Text('$header', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(0, 0, 0, 1))),
 
                 SizedBox(height: 8),
-                Text('${"post.desc"}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Color.fromRGBO(0, 0, 0, 1))),
+                Text('$desc', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Color.fromRGBO(0, 0, 0, 1))),
 
                 SizedBox(height: 16),
 
                 // Body of the Notice
                 Text(
-                  "post.content",
+                  content,
                   style: TextStyle(fontSize: 12, color: Color.fromRGBO(0, 0, 0, 1)),
                 ),
 
                 SizedBox(height: 16),
-                // Document Attached Icon
-                // if (post.postdoc != null && post.postdoc.isNotEmpty)
-                //   Icon(
-                //     Icons.attach_file, // You can replace this with the actual icon you want
-                //     color: Colors.blue, // You can customize the icon color
-                //   ),
+                if (this.postdoc != null && this.postdoc.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Image.network(
+                      this.postdoc, // Assuming postdoc contains the URL of the attached image
+                      width: 350, // Set the width of the image as per your requirement
+                      height: 400, // Set the height of the image as per your requirement
+                      fit: BoxFit.cover, // You can customize the BoxFit property based on your needs
+                    ),
+                  ),
+
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  String _formatTimestamp(Timestamp timestamp) {
+    DateTime dateTime = timestamp.toDate();
+    String formattedDate = DateFormat('dd-MM-yyyy • hh:mm a').format(dateTime);
+    return formattedDate;
   }
 }
