@@ -58,7 +58,7 @@ class ForumSettingsPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              '$forumDesc',
+              '$forumDesc'??'no forum desc',
               style: TextStyle(fontSize: 16),
             ),
           ),

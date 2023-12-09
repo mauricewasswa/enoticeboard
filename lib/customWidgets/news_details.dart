@@ -78,11 +78,15 @@ class NewsDetailPage extends StatelessWidget {
                 ),
 
                 SizedBox(height: 16),
-                // Document Attached Icon
                 if (post.postdoc != null && post.postdoc.isNotEmpty)
-                  Icon(
-                    Icons.attach_file, // You can replace this with the actual icon you want
-                    color: Colors.blue, // You can customize the icon color
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Image.network(
+                      post.postdoc, // Assuming post.postdoc contains the URL of the attached image
+                      width: 350, // Set the width of the image as per your requirement
+                      height: 500, // Set the height of the image as per your requirement
+                      fit: BoxFit.cover, // You can customize the BoxFit property based on your needs
+                    ),
                   ),
               ],
             ),
