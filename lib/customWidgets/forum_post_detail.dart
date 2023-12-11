@@ -96,16 +96,8 @@ class ForumPostDetail extends StatelessWidget {
                 ),
 
                 SizedBox(height: 16),
-                if (this.postdoc != null && this.postdoc.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Image.network(
-                      this.postdoc, // Assuming postdoc contains the URL of the attached image
-                      width: 350, // Set the width of the image as per your requirement
-                      height: 400, // Set the height of the image as per your requirement
-                      fit: BoxFit.cover, // You can customize the BoxFit property based on your needs
-                    ),
-                  ),
+                // Image Widget with Error Handling
+                _buildImageWidget(),
 
               ],
             ),
@@ -120,4 +112,42 @@ class ForumPostDetail extends StatelessWidget {
     String formattedDate = DateFormat('dd-MM-yyyy • hh:mm a').format(dateTime);
     return formattedDate;
   }
+
+  Widget _buildImageWidget() {
+    try {
+      if (this.postdoc != null && this.postdoc.isNotEmpty) {
+        print('Image URL: $postdoc'); // Print the image URL
+
+        return Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Image.network(
+            this.postdoc,
+            width: 350,
+            height: 400,
+            fit: BoxFit.cover,
+          ),
+        );
+      }
+    } catch (error) {
+      print('Error loading image: $error');
+      // You can still print the image URL even in case of an error
+      print('Image URL: $postdoc');
+
+      // You can return a placeholder or an error message widget
+      return Container(
+        width: 350,
+        height: 400,
+        color: Colors.grey, // Placeholder color or an error color
+        child: Center(
+          child: Text('Image Error'), // Display an error message
+        ),
+      );
+    }
+
+    // Return an empty widget if there is no image
+    return SizedBox.shrink();
+  }
+
+
+
 }

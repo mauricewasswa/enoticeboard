@@ -127,6 +127,7 @@ class _TestPageState extends State<TestPage> {
                       : '';
 
                   return Post(
+                    postId: doc.id,
                     title: data['Title'] ?? '',
                     content: data['Content'] ?? '',
                     fname: data['fname'] ?? '',

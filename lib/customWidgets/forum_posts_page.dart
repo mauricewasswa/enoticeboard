@@ -188,7 +188,7 @@ class PostWidget extends StatelessWidget {
             Text(time?.toDate().toString() ?? 'No Date', style: TextStyle(fontSize: 11, color: Color.fromRGBO(0, 0, 0, 1))),
 
             // Add this line to identify the property causing the issue
-            Text('DEBUG: ${header ?? 'No Header'}'),
+            Text('${header ?? 'No Header'}'),
 
             SizedBox(height: 8),
             Text('${header ?? 'No Header'}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(0, 0, 0, 1))),

@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Post {
+  final String postId;
   final String title;
   final String content;
   final String fname;
@@ -15,6 +16,7 @@ class Post {
   final postdoc;
 
   Post({
+    required this.postId,
     required this.title,
     required this.content,
     required this.fname,
