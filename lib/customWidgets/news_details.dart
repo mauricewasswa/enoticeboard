@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enoticeboard/customWidgets/reply_center.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -208,6 +209,25 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
               ],
             ),
             subtitle: Text(replyData['replyText']),
+            trailing: TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReplyCenter(
+                      title: replyData['replyText'],
+                      replyContent: replyData['replyText'],
+                      replyId: replySnapshot.id,
+                      uname: replyData['userName'],
+                      usertitle: replyData['userTitle'],
+                      level: replyData['userLevel'],
+                      profPic: replyData['userProfilePic'],)
+                  ),
+
+                );
+              },
+              child: Text("Reply"),),
+
           );
 
           replyWidgets.add(replyWidget);
@@ -228,4 +248,6 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
       },
     );
   }
+
+
 }
