@@ -144,7 +144,7 @@ class PostWidget extends StatelessWidget {
               return ForumPostDetail(title:title,
                 content: content,
                 fname: fname, lname: lname, level: level, header:
-                header, desc: desc, profImgUrl:profImgUrl, time: time, forumId: forumId, forumTitle: title,
+                header, desc: desc, profImgUrl:profImgUrl, time: time, forumId: forumId, forumTitle: title, postId: postId,
 
               ); // Pass the post to ForumPostDetail
             },

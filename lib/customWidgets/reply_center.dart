@@ -5,6 +5,22 @@ import 'package:comment_tree/data/comment.dart';
 import 'package:comment_tree/widgets/comment_tree_widget.dart';
 import 'package:comment_tree/widgets/tree_theme_data.dart';
 
+class ReplyData {
+  final String displayName;
+  final String imageUrl;
+  final String level;
+  final String replyText;
+  final Timestamp timestamp;
+
+  ReplyData({
+    required this.displayName,
+    required this.imageUrl,
+    required this.level,
+    required this.replyText,
+    required this.timestamp,
+  });
+}
+
 class ReplyCenter extends StatefulWidget {
   ReplyCenter({
     Key? key,
@@ -32,11 +48,13 @@ class ReplyCenter extends StatefulWidget {
 class _ReplyCenterState extends State<ReplyCenter> {
   TextEditingController _replyController = TextEditingController();
   CustomUser? _currentUser; // Variable to store current user information
+  List<ReplyData> _repliesList = [];
 
   @override
   void initState() {
     super.initState();
     _getCurrentUser();
+    _getcommentreplys();
   }
 
   Future<void> _getCurrentUser() async {
@@ -64,13 +82,57 @@ class _ReplyCenterState extends State<ReplyCenter> {
                 : null,
             email: user.email,
             photoURL: userData['profImg'],
-            level: userData['level']
+            level: userData['level'],
           );
         });
       }
     }
   }
 
+  Future<void> _getcommentreplys() async {
+    _repliesList = await _fetchReplies(widget.replyId);
+    setState(() {}); // Trigger a rebuild to update the UI with the fetched replies
+  }
+
+  Future<List<ReplyData>> _fetchReplies(String replyId) async {
+    List<ReplyData> repliesList = [];
+
+    try {
+      QuerySnapshot commentReplySnapshot = await FirebaseFirestore.instance
+          .collection('comment_replys')
+          .where('replyId', isEqualTo: replyId)
+          .get();
+
+      if (commentReplySnapshot.docs.isNotEmpty) {
+        for (QueryDocumentSnapshot replyDoc in commentReplySnapshot.docs) {
+          Map<String, dynamic> replyDataMap = replyDoc.data() as Map<String, dynamic>;
+
+          // Extracting specific fields
+          String displayName = replyDataMap['displayName'] ?? '';
+          String imageUrl = replyDataMap['imgUrl'] ?? '';
+          String level = replyDataMap['level'] ?? '';
+          String replyText = replyDataMap['replyText'] ?? '';
+          Timestamp timestamp = replyDataMap['timestamp'] ?? Timestamp.now();
+
+          // Creating a ReplyData object and adding it to the list
+          ReplyData replyData = ReplyData(
+            displayName: displayName,
+            imageUrl: imageUrl,
+            level: level,
+            replyText: replyText,
+            timestamp: timestamp,
+          );
+
+          repliesList.add(replyData);
+        }
+      }
+
+      return repliesList;
+    } catch (e) {
+      print('Error fetching replies: $e');
+      return [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,19 +144,14 @@ class _ReplyCenterState extends State<ReplyCenter> {
         children: [
           Expanded(
             child: Container(
-              child: CommentTreeWidget<Comment, Comment>(
+              child: CommentTreeWidget<Comment, ReplyData>(
                 Comment(
-                    avatar: 'null',
-                    userName: 'null',
-                    content: 'felangel made felangel/cubit_and_beyond public '),
-                [
-                  Comment(
-                      avatar: 'null',
-                      userName: 'null',
-                      content: 'A Dart template generator which helps teams'),
-                ],
-                treeThemeData:
-                TreeThemeData(lineColor: Colors.green[500]!, lineWidth: 3),
+                  avatar: 'null',
+                  userName: 'null',
+                  content: 'felangel made felangel/cubit_and_beyond public ',
+                ),
+                _repliesList, // Pass the fetched replies to CommentTreeWidget
+                treeThemeData: TreeThemeData(lineColor: Colors.green[500]!, lineWidth: 3),
                 avatarRoot: (context, data) => PreferredSize(
                   child: CircleAvatar(
                     radius: 18,
@@ -107,7 +164,7 @@ class _ReplyCenterState extends State<ReplyCenter> {
                   child: CircleAvatar(
                     radius: 12,
                     backgroundColor: Colors.grey,
-                    backgroundImage: AssetImage('assets/av1.png'),
+                    backgroundImage: NetworkImage(data.imageUrl),
                   ),
                   preferredSize: Size.fromRadius(12),
                 ),
@@ -116,34 +173,30 @@ class _ReplyCenterState extends State<ReplyCenter> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding:
-                        EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                         decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(12)),
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Edwine Kasumba',
+                              data.displayName, // Use the display name from ReplyData
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
-                                  ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black),
+                                  ?.copyWith(fontWeight: FontWeight.w600, color: Colors.black),
                             ),
                             SizedBox(
                               height: 4,
                             ),
                             Text(
-                              '${data.content}',
+                              data.replyText, // Use the reply text from ReplyData
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
-                                  ?.copyWith(
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.black),
+                                  ?.copyWith(fontWeight: FontWeight.w300, color: Colors.black),
                             ),
                           ],
                         ),
@@ -152,9 +205,7 @@ class _ReplyCenterState extends State<ReplyCenter> {
                         style: Theme.of(context)
                             .textTheme
                             .caption!
-                            .copyWith(
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.bold),
+                            .copyWith(color: Colors.grey[700], fontWeight: FontWeight.bold),
                         child: Padding(
                           padding: EdgeInsets.only(top: 4),
                           child: Row(
@@ -162,13 +213,13 @@ class _ReplyCenterState extends State<ReplyCenter> {
                               SizedBox(
                                 width: 8,
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  // Set the reply text field active
-                                  _showReplyTextField(data);
-                                },
-                                child: Text("Reply"),
-                              ),
+                              // TextButton(
+                              //   onPressed: () {
+                              //     // Set the reply text field active
+                              //     _showReplyTextField(data as Comment);
+                              //   },
+                              //   child: Text("Reply"),
+                              // ),
                             ],
                           ),
                         ),
@@ -181,26 +232,22 @@ class _ReplyCenterState extends State<ReplyCenter> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding:
-                        EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                         decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(12)),
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
                                 Text(
-                                  widget.usertitle +
-                                      " " +
-                                      widget.uname,
+                                  widget.usertitle + " " + widget.uname,
                                   style: Theme.of(context)
                                       .textTheme
                                       .caption!
-                                      .copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black),
+                                      .copyWith(fontWeight: FontWeight.w600, color: Colors.black),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -211,9 +258,7 @@ class _ReplyCenterState extends State<ReplyCenter> {
                                   style: Theme.of(context)
                                       .textTheme
                                       .caption!
-                                      .copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black),
+                                      .copyWith(fontWeight: FontWeight.w600, color: Colors.black),
                                 ),
                                 Text(' • '),
                               ],
@@ -222,13 +267,11 @@ class _ReplyCenterState extends State<ReplyCenter> {
                               height: 4,
                             ),
                             Text(
-                              '${widget.replyContent}',
+                              widget.replyContent,
                               style: Theme.of(context)
                                   .textTheme
                                   .caption!
-                                  .copyWith(
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.black),
+                                  .copyWith(fontWeight: FontWeight.w300, color: Colors.black),
                             ),
                           ],
                         ),
@@ -237,9 +280,7 @@ class _ReplyCenterState extends State<ReplyCenter> {
                         style: Theme.of(context)
                             .textTheme
                             .caption!
-                            .copyWith(
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.bold),
+                            .copyWith(color: Colors.grey[700], fontWeight: FontWeight.bold),
                         child: Padding(
                           padding: EdgeInsets.only(top: 4),
                           child: Row(
@@ -247,16 +288,16 @@ class _ReplyCenterState extends State<ReplyCenter> {
                               SizedBox(
                                 width: 8,
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(0),
-                                child: TextButton(
-                                  onPressed: () {
-                                    // Set the reply text field active
-                                    _showReplyTextField(data);
-                                  },
-                                  child: Text("Reply"),
-                                ),
-                              ),
+                              // Padding(
+                              //   padding: const EdgeInsets.all(0),
+                              //   child: TextButton(
+                              //     onPressed: () {
+                              //       // Set the reply text field active
+                              //       _showReplyTextField(data);
+                              //     },
+                              //     child: Text("Reply"),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),
@@ -320,14 +361,15 @@ class _ReplyCenterState extends State<ReplyCenter> {
         'replyText': replyText,
         'userId': user.uid,
         'userEmail': user.email,
-        'displayName' : user.displayName,
-        'imgUrl' : user.photoURL,
-        'level' : user.level,
+        'displayName': user.displayName,
+        'imgUrl': user.photoURL,
+        'level': user.level,
         'timestamp': FieldValue.serverTimestamp(),
       });
 
       // Successful submission, handle accordingly
       print('Reply submitted successfully');
+      await _getcommentreplys();
     } catch (e) {
       // Handle exceptions
       print('Error submitting reply: $e');
@@ -348,13 +390,11 @@ class CustomUser {
     this.displayName,
     this.email,
     this.photoURL,
-    this.level
+    this.level,
   });
-
-
 }
 
-class CommentReplys{
+class CommentReplys {
   late final String? ruid;
   late final String? rdisplayName;
   late final String? remail;
@@ -366,15 +406,10 @@ class CommentReplys{
     this.remail,
     this.rlevel,
     this.rphotoURL,
-    this.ruid
-
-});
-
+    this.ruid,
+  });
 
   Future<List<DocumentSnapshot>> fetchReplies(String commentId) async {
-    // Replace 'your_collection_path' with the actual path to your collection
-    //String collectionPath = 'your_collection_path/comment_replies';
-
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection("comment_replys")
@@ -386,21 +421,6 @@ class CommentReplys{
     } catch (e) {
       print('Error fetching replies: $e');
       return [];
-    }
-  }
-
-  void main() async {
-    // Replace 'your_comment_id' with the actual comment ID for which you want to fetch replies
-    String commentId = 'hYzf8mCJQjkiCh5ZxBkM';
-
-    List<DocumentSnapshot> replies = await fetchReplies(commentId);
-
-    if (replies.isNotEmpty) {
-      for (var reply in replies) {
-        print('Reply: ${reply.data()}');
-      }
-    } else {
-      print('No replies found for comment $commentId');
     }
   }
 }
